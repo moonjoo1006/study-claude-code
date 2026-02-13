@@ -44,4 +44,56 @@ export async function getWorkoutsForDate(date: Date, timezone: string = 'UTC') {
   return result;
 }
 
+export async function createWorkout(data: { name: string; notes?: string }) {
+  const { userId } = await auth();
+  if (!userId) throw new Error('Unauthorized');
+
+  const [workout] = await db
+    .insert(workouts)
+    .values({
+      userId,
+      name: data.name,
+      notes: data.notes,
+    })
+    .returning();
+
+  return workout;
+}
+
+export async function getWorkoutById(workoutId: number) {
+  const { userId } = await auth();
+  if (!userId) throw new Error('Unauthorized');
+
+  const result = await db.query.workouts.findFirst({
+    where: and(
+      eq(workouts.id, workoutId),
+      eq(workouts.userId, userId),
+    ),
+  });
+
+  return result;
+}
+
+export async function updateWorkout(workoutId: number, data: { name: string; notes?: string }) {
+  const { userId } = await auth();
+  if (!userId) throw new Error('Unauthorized');
+
+  const [workout] = await db
+    .update(workouts)
+    .set({
+      name: data.name,
+      notes: data.notes,
+      updatedAt: new Date(),
+    })
+    .where(
+      and(
+        eq(workouts.id, workoutId),
+        eq(workouts.userId, userId),
+      )
+    )
+    .returning();
+
+  return workout;
+}
+
 export type WorkoutWithDetails = Awaited<ReturnType<typeof getWorkoutsForDate>>[number];

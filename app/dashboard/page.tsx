@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { format, parseISO } from "date-fns";
 
 import {
@@ -8,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getWorkoutsForDate } from "@/data/workouts";
+import { Button } from "@/components/ui/button";
 import { DatePicker } from "./date-picker";
 import { TimezoneRedirect } from "./timezone-redirect";
 
@@ -30,7 +32,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   return (
     <div className="container mx-auto max-w-2xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold">Workout Log</h1>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Workout Log</h1>
+        <Button asChild>
+          <Link href="/dashboard/workout/new">New Workout</Link>
+        </Button>
+      </div>
 
       <div className="mb-8">
         <DatePicker currentDate={dateString} />
